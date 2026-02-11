@@ -1,0 +1,129 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Admin user for CMS access
+model Admin {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String   // Hashed password
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  posts     Post[]
+  photos    Photo[]
+}
+
+// Blog/News posts with SEO metadata
+model Post {
+  id              String   @id @default(cuid())
+  title           String
+  slug            String   @unique // SEO-friendly URL
+  excerpt         String?  // Short description for listings
+  content         String   // Main content (markdown or HTML)
+  coverImage      String?  // Featured image URL
+  altText         String?  // Alt text for cover image (SEO/Accessibility)
+  
+  // SEO fields
+  metaTitle       String?  // Custom page title
+  metaDescription String?  // Meta description
+  metaKeywords    String?  // Keywords (comma-separated)
+  
+  published       Boolean  @default(false)
+  featured        Boolean  @default(false) // Highlight important posts
+  authorId        String
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  publishedAt     DateTime?
+
+  author          Admin    @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}
+
+// Photo/Image management
+model Photo {
+  id              String   @id @default(cuid())
+  title           String
+  description     String?  // Photo description
+  imageUrl        String   // CDN or local URL
+  altText         String   // Required for SEO and accessibility
+  thumbnailUrl    String?  // Optimized thumbnail
+  
+  // Categorization
+  category        String   @default("general") // portfolio, blog, events, etc.
+  tags            String?  // Comma-separated tags
+  
+  // Display settings
+  displayOrder    Int      @default(0) // For ordering
+  featured        Boolean  @default(false)
+  
+  uploadedById    String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  uploader        Admin    @relation(fields: [uploadedById], references: [id], onDelete: Cascade)
+  galleryItems    GalleryItem[]
+}
+
+// Gallery - collections of photos
+model Gallery {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  coverImage  String?
+  
+  order       Int      @default(0)
+  published   Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  items       GalleryItem[]
+}
+
+// Many-to-many relationship between Gallery and Photos
+model GalleryItem {
+  id        String   @id @default(cuid())
+  galleryId String
+  photoId   String
+  order     Int      @default(0)
+  
+  gallery   Gallery   @relation(fields: [galleryId], references: [id], onDelete: Cascade)
+  photo     Photo     @relation(fields: [photoId], references: [id], onDelete: Cascade)
+
+  @@unique([galleryId, photoId])
+}
+
+// Contact form submissions
+model Contact {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  message   String
+  read      Boolean  @default(false)
+  
+  createdAt DateTime @default(now())
+}
+
+// Analytics/View tracking (optional)
+model PageView {
+  id        String   @id @default(cuid())
+  path      String
+  userAgent String?
+  ip        String?
+  createdAt DateTime @default(now())
+
+  @@index([path])
+  @@index([createdAt])
+}
