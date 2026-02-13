@@ -1,9 +1,0 @@
-# https://www.robotstxt.org/robotstxt.html
-User-agent: *
-Allow: /
-
-# Disallow admin area
-Disallow: /admin
-
-# Sitemap
-Sitemap: https://sanketdhital.com/sitemap.xml
