@@ -205,6 +205,24 @@ textarea#postContent::placeholder{color:var(--faint)}
 .avail-chip.sel{border-color:var(--gold)}
 .avail-chip:hover{filter:brightness(1.1)}
 
+
+/* ── BLOG IMAGE UPLOAD ── */
+.img-upload-zone{border:2px dashed rgba(201,168,76,.25);border-radius:10px;padding:1.5rem;text-align:center;cursor:pointer;transition:all .2s;background:rgba(255,255,255,.02);margin-bottom:.8rem}
+.img-upload-zone:hover,.img-upload-zone.drag{border-color:var(--gold);background:rgba(201,168,76,.05)}
+.img-upload-zone input{display:none}
+.img-upload-zone svg{width:28px;height:28px;color:var(--gold);margin-bottom:.5rem}
+.img-upload-lbl{font-size:.78rem;color:var(--dim);font-weight:300}
+.img-upload-lbl strong{color:var(--gold)}
+.img-preview-grid{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.8rem}
+.img-preview-item{position:relative;width:72px;height:72px;border-radius:8px;overflow:hidden;border:1px solid var(--bs)}
+.img-preview-item img{width:100%;height:100%;object-fit:cover}
+.img-preview-item button{position:absolute;top:2px;right:2px;background:rgba(0,0,0,.7);border:none;color:white;border-radius:50%;width:18px;height:18px;font-size:.7rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+.img-insert-btn{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.07em;text-transform:uppercase;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.2);color:var(--gold);border-radius:6px;padding:.25rem .55rem;cursor:pointer;margin-right:.25rem;margin-bottom:.25rem;transition:all .15s}
+.img-insert-btn:hover{background:rgba(201,168,76,.2)}
+.format-tb{display:flex;gap:.25rem;padding:.5rem .7rem;background:rgba(255,255,255,.02);border-bottom:1px solid var(--bs);flex-wrap:wrap;align-items:center}
+.format-sel{background:rgba(255,255,255,.04);border:1px solid var(--bs);border-radius:6px;padding:.28rem .5rem;color:var(--cream);font-family:'DM Mono',monospace;font-size:.65rem;outline:none;cursor:pointer}
+.format-sel option{background:var(--nm)}
+
 /* ── BLOG PREVIEW MODAL ── */
 .modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);z-index:200;align-items:center;justify-content:center;padding:2rem}
 .modal-ov.open{display:flex}
@@ -351,19 +369,39 @@ textarea#postContent::placeholder{color:var(--faint)}
       <div class="editor-layout">
         <div>
           <div class="ed-box">
-            <div class="ed-toolbar">
-              <button class="tb" onclick="ins('**','**')"><b>B</b></button>
-              <button class="tb" onclick="ins('*','*')"><i>I</i></button>
-              <button class="tb" onclick="ins('~~','~~')"><s>S</s></button>
+            <div class="format-tb">
+              <select class="format-sel" onchange="insBlock(this.value);this.value=''">
+                <option value="">Paragraph</option>
+                <option value="# ">Heading 1</option>
+                <option value="## ">Heading 2</option>
+                <option value="### ">Heading 3</option>
+                <option value="#### ">Heading 4</option>
+              </select>
               <span class="tb-sep"></span>
-              <button class="tb" onclick="ins('## ')">H2</button>
-              <button class="tb" onclick="ins('### ')">H3</button>
+              <button class="tb" title="Bold" onclick="ins('**','**')"><b>B</b></button>
+              <button class="tb" title="Italic" onclick="ins('*','*')"><i>I</i></button>
+              <button class="tb" title="Strikethrough" onclick="ins('~~','~~')"><s>S</s></button>
+              <button class="tb" title="Underline" onclick="ins('<u>','</u>')">U</button>
               <span class="tb-sep"></span>
-              <button class="tb" onclick="ins('- ')">List</button>
-              <button class="tb" onclick="ins('> ')">Quote</button>
-              <button class="tb" onclick="ins('\`','\`')">Code</button>
+              <button class="tb" title="Bullet list" onclick="ins('\n- ')">• List</button>
+              <button class="tb" title="Numbered list" onclick="ins('\n1. ')">1. List</button>
+              <button class="tb" title="Quote" onclick="ins('\n> ')">❝</button>
+              <button class="tb" title="Code block" onclick="ins('\n```\n','\n```')">{ }</button>
+              <button class="tb" title="Inline code" onclick="ins('\`','\`')">` `</button>
+              <button class="tb" title="Divider" onclick="ins('\n---\n')">—</button>
               <span class="tb-sep"></span>
-              <button class="tb" onclick="insLink()">Link</button>
+              <button class="tb" title="Link" onclick="insLink()">🔗</button>
+              <button class="tb" title="Insert image from uploads" onclick="toggleImgPanel()" style="color:var(--gold)">🖼</button>
+            </div>
+            <div id="imgPanel" style="display:none;border-bottom:1px solid var(--bs);padding:.7rem">
+              <div class="img-upload-zone" id="imgDropZone" onclick="document.getElementById('imgFileIn').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleImgDrop(event)">
+                <input type="file" id="imgFileIn" accept="image/*" multiple onchange="handleImgFiles(this.files)"/>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                <div class="img-upload-lbl"><strong>Click or drag</strong> images here to upload</div>
+                <div style="font-size:.68rem;color:var(--faint);margin-top:.25rem">JPG, PNG, GIF, WebP · Multiple allowed</div>
+              </div>
+              <div class="img-preview-grid" id="imgPreviews"></div>
+              <div id="imgInsertBtns" style="font-size:.72rem;color:var(--faint)"></div>
             </div>
             <textarea id="postTitle" rows="2" placeholder="Post title…"></textarea>
             <div class="t-rule"></div>
@@ -729,6 +767,65 @@ function changePassword(){
   setTimeout(()=>{msg.style.display='none';},3000);
 }
 
+
+/* ════ BLOG IMAGE UPLOAD ════ */
+var uploadedImgs=[];
+function toggleImgPanel(){
+  const p=document.getElementById('imgPanel');
+  p.style.display=p.style.display==='none'?'block':'none';
+}
+function handleImgFiles(files){
+  Array.from(files).forEach(file=>{
+    if(!file.type.startsWith('image/'))return;
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const dataUrl=e.target.result;
+      uploadedImgs.push({name:file.name,url:dataUrl});
+      renderImgPreviews();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+function handleImgDrop(e){
+  e.preventDefault();
+  document.getElementById('imgDropZone').classList.remove('drag');
+  handleImgFiles(e.dataTransfer.files);
+}
+function renderImgPreviews(){
+  const grid=document.getElementById('imgPreviews');
+  const btns=document.getElementById('imgInsertBtns');
+  grid.innerHTML=uploadedImgs.map((img,i)=>`
+    <div class="img-preview-item">
+      <img src="${img.url}" alt="${img.name}"/>
+      <button onclick="removeImg(${i})">×</button>
+    </div>`).join('');
+  btns.innerHTML=uploadedImgs.length
+    ?'<div style="font-size:.7rem;color:var(--dim);margin-bottom:.4rem">Insert into post:</div>'+
+      uploadedImgs.map((img,i)=>`<button class="img-insert-btn" onclick="insertImg(${i})">${img.name.slice(0,20)}</button>`).join('')
+    :'';
+}
+function removeImg(i){uploadedImgs.splice(i,1);renderImgPreviews();}
+function insertImg(i){
+  const img=uploadedImgs[i];
+  if(!img)return;
+  const md=`\n![${img.name}](${img.url})\n`;
+  const ta=document.getElementById('postContent');
+  const s=ta.selectionStart;
+  ta.value=ta.value.slice(0,s)+md+ta.value.slice(s);
+  ta.selectionStart=ta.selectionEnd=s+md.length;
+  ta.focus();
+  wcUpdate();
+  toast('🖼 Image inserted!');
+}
+function insBlock(prefix){
+  if(!prefix)return;
+  const ta=document.getElementById('postContent');
+  const s=ta.selectionStart;
+  const lineStart=ta.value.lastIndexOf('\n',s-1)+1;
+  ta.value=ta.value.slice(0,lineStart)+prefix+ta.value.slice(lineStart);
+  ta.focus();
+  wcUpdate();
+}
 /* ════════════════════════════════
    REFRESH OVERVIEW
 ════════════════════════════════ */
