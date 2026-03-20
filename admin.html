@@ -223,6 +223,15 @@ textarea#postContent::placeholder{color:var(--faint)}
 .format-sel{background:rgba(255,255,255,.04);border:1px solid var(--bs);border-radius:6px;padding:.28rem .5rem;color:var(--cream);font-family:'DM Mono',monospace;font-size:.65rem;outline:none;cursor:pointer}
 .format-sel option{background:var(--nm)}
 
+
+.pub-box{background:linear-gradient(135deg,rgba(201,168,76,.08),rgba(201,168,76,.03));border:1px solid rgba(201,168,76,.25);border-radius:12px;padding:1.2rem 1.4rem;margin-bottom:1rem}
+.pub-title{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:.4rem;display:flex;align-items:center;gap:.5rem}
+.pub-desc{font-size:.8rem;color:var(--dim);line-height:1.6;margin-bottom:.9rem}
+.pub-step{display:flex;align-items:flex-start;gap:.6rem;font-size:.76rem;color:var(--faint);margin-bottom:.3rem}
+.pub-step-n{font-family:'DM Mono',monospace;font-size:.62rem;background:rgba(201,168,76,.15);color:var(--gold);width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.05rem}
+.btn-publish{background:var(--gold);color:var(--navy);font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;border:none;border-radius:8px;padding:.65rem 1.4rem;cursor:pointer;font-weight:700;transition:all .2s;display:flex;align-items:center;gap:.5rem}
+.btn-publish:hover{background:var(--gl);transform:translateY(-1px);box-shadow:0 6px 20px rgba(201,168,76,.3)}
+.btn-publish svg{width:15px;height:15px}
 /* ── BLOG PREVIEW MODAL ── */
 .modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);z-index:200;align-items:center;justify-content:center;padding:2rem}
 .modal-ov.open{display:flex}
@@ -572,9 +581,32 @@ textarea#postContent::placeholder{color:var(--faint)}
       <div style="max-width:560px">
         <div class="panel">
           <div class="panel-title">Data Management</div>
-          <div style="display:flex;gap:.6rem;flex-wrap:wrap">
-            <button class="btn btn-blue" onclick="exportAll()">↓ Export All Data (JSON)</button>
-            <button class="btn btn-ghost" onclick="document.getElementById('impFile').click()">↑ Import JSON</button>
+          <!-- PUBLISH TO SITE -->
+          <div class="pub-box">
+            <div class="pub-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.6 19.79 19.79 0 0 1 1.58 5a2 2 0 0 1 1.99-2H6.5a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 10.09a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              Publish to Live Site (Mobile + All Devices)
+            </div>
+            <p class="pub-desc">
+              Changes you make here are saved in <b style="color:var(--cream)">this browser only</b>. 
+              To make changes visible on mobile and all other devices, click Publish — it downloads 
+              an updated <code style="color:var(--gold);font-size:.75rem">index.html</code> with your 
+              data baked in. Then push it to GitHub.
+            </p>
+            <div class="pub-step"><span class="pub-step-n">1</span>Make all your changes and save each section</div>
+            <div class="pub-step"><span class="pub-step-n">2</span>Click Publish — downloads updated index.html</div>
+            <div class="pub-step"><span class="pub-step-n">3</span>Replace your local index.html and push to GitHub</div>
+            <div class="pub-step"><span class="pub-step-n">4</span>Vercel deploys in ~30s — changes live on ALL devices ✓</div>
+            <br/>
+            <button class="btn-publish" onclick="publishSite()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Publish — Download Updated index.html
+            </button>
+          </div>
+
+          <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.5rem">
+            <button class="btn btn-blue" onclick="exportAll()">↓ Backup Data (JSON)</button>
+            <button class="btn btn-ghost" onclick="document.getElementById('impFile').click()">↑ Restore from Backup</button>
           </div>
           <input type="file" id="impFile" accept=".json" style="display:none" onchange="handleImport(event)"/>
           <p style="font-size:.76rem;color:var(--faint);margin-top:.8rem">Export regularly as a backup. Import will overwrite all current data.</p>
@@ -1213,6 +1245,49 @@ const AVAIL_PRESETS=[
 /* ════════════════════════════════
    SETTINGS
 ════════════════════════════════ */
+
+/* ════════════════════════════════
+   PUBLISH TO SITE
+   Bakes localStorage data into
+   index.html DD object so ALL
+   devices see the latest content
+════════════════════════════════ */
+function publishSite(){
+  // Fetch current index.html
+  fetch('index.html?nocache='+Date.now())
+    .then(r=>r.text())
+    .then(html=>{
+      // Build the updated DD object from current SD data
+      const newDD=JSON.stringify(SD,null,2);
+      // Replace the DD= block in index.html
+      // Find start of DD block
+      const ddStart=html.indexOf('const DD={');
+      if(ddStart<0){toast('⚠ Could not find DD block in index.html');return;}
+      // Find the matching closing }; by counting braces
+      let depth=0,ddEnd=-1;
+      for(let i=ddStart+9;i<html.length;i++){
+        if(html[i]==='{')depth++;
+        else if(html[i]==='}'){depth--;if(depth===0){ddEnd=i+1;break;}}
+      }
+      // Skip optional semicolon
+      if(ddEnd>0&&html[ddEnd]===';')ddEnd++;
+      if(ddEnd<0){toast('⚠ Could not parse DD block end');return;}
+      const newHtml=html.slice(0,ddStart)+'const DD='+newDD+';'+html.slice(ddEnd);
+      // Also update posts
+      const postsStr=JSON.stringify(JSON.parse(localStorage.getItem('sd_posts')||'[]'));
+      // Download the updated index.html
+      const blob=new Blob([newHtml],{type:'text/html'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.href=url;a.download='index.html';
+      document.body.appendChild(a);a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast('✓ index.html downloaded! Push it to GitHub to publish everywhere.');
+    })
+    .catch(()=>toast('⚠ Make sure admin.html and index.html are in the same folder.'));
+}
+
 function exportAll(){dl('sanket-backup.json',JSON.stringify({siteContent:SD,posts},null,2),'application/json');toast('📥 Full backup exported!');}
 function handleImport(e){
   const f=e.target.files[0];if(!f)return;
