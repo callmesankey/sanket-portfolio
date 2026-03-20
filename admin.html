@@ -232,6 +232,9 @@ textarea#postContent::placeholder{color:var(--faint)}
 .btn-publish{background:var(--gold);color:var(--navy);font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;border:none;border-radius:8px;padding:.65rem 1.4rem;cursor:pointer;font-weight:700;transition:all .2s;display:flex;align-items:center;gap:.5rem}
 .btn-publish:hover{background:var(--gl);transform:translateY(-1px);box-shadow:0 6px 20px rgba(201,168,76,.3)}
 .btn-publish svg{width:15px;height:15px}
+
+.pub-banner{display:none;position:fixed;bottom:1.5rem;right:1.5rem;background:var(--gold);color:var(--navy);padding:.65rem 1.1rem;border-radius:8px;font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700;cursor:pointer;box-shadow:0 8px 24px rgba(201,168,76,.4);z-index:9000;transition:all .2s;display:flex;align-items:center;gap:.5rem}
+.pub-banner:hover{background:var(--gl);transform:translateY(-2px)}
 /* ── BLOG PREVIEW MODAL ── */
 .modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);z-index:200;align-items:center;justify-content:center;padding:2rem}
 .modal-ov.open{display:flex}
@@ -424,6 +427,11 @@ textarea#postContent::placeholder{color:var(--faint)}
             <button class="btn btn-gold" style="width:100%;margin-bottom:.5rem;justify-content:center" onclick="savePost('published')">✓ Publish</button>
             <button class="btn btn-ghost" style="width:100%;margin-bottom:.5rem;justify-content:center" onclick="savePost('draft')">Save Draft</button>
             <button class="btn btn-blue" style="width:100%;justify-content:center" onclick="exportPost()">↓ Export HTML</button>
+          <div id="pubManual" style="display:none;margin-top:1rem;padding:.9rem;background:rgba(255,255,255,.03);border:1px solid var(--bs);border-radius:8px;font-size:.78rem;color:var(--dim);line-height:1.7">
+            <b style="color:var(--cream)">Manual publish:</b> Copy your data below, open index.html in a text editor, find <code style="color:var(--gold)">const DD={</code> and replace everything up to the matching <code style="color:var(--gold)">};</code> with this:
+            <br/><br/>
+            <button class="btn btn-ghost btn-xs" onclick="copyDD()">📋 Copy DD data</button>
+          </div>
           </div>
           <div class="panel">
             <div class="panel-title">Details</div>
@@ -598,7 +606,7 @@ textarea#postContent::placeholder{color:var(--faint)}
             <div class="pub-step"><span class="pub-step-n">3</span>Replace your local index.html and push to GitHub</div>
             <div class="pub-step"><span class="pub-step-n">4</span>Vercel deploys in ~30s — changes live on ALL devices ✓</div>
             <br/>
-            <button class="btn-publish" onclick="publishSite()">
+            <button class="btn-publish" onclick="publishSite(this)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
               Publish — Download Updated index.html
             </button>
@@ -953,7 +961,11 @@ function exportPost(){
   if(!editId)savePost('draft');
   const p=posts.find(x=>x.id===editId);if(!p){toast('⚠ Save first');return;}
   const body=(p.content||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\n/g,'<br/>');
-  const html=`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><title>${p.title} | Sanket Dhital</title><meta name="description" content="${p.excerpt||''}"/><link rel="canonical" href="https://sanketdhital.com.np/blog/${p.slug}"/><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"${p.title}","author":{"@type":"Person","name":"Sanket Dhital"},"datePublished":"${p.updated}"}<\/script><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet"/><style>body{font-family:'DM Sans',sans-serif;background:#faf8f4;color:#1a1a2e;max-width:720px;margin:0 auto;padding:3rem 1.5rem;line-height:1.8;font-weight:300}h1{font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:900;margin-bottom:.5rem;line-height:1.2}.meta{color:#999;font-size:.8rem;margin-bottom:2.5rem}.cat{background:rgba(201,168,76,.1);color:#c9a84c;padding:.2rem .6rem;border-radius:100px;font-size:.7rem;margin-right:.4rem}.content{font-size:1rem;color:#3a3a5e}.back{display:inline-flex;align-items:center;gap:.5rem;color:#c9a84c;text-decoration:none;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;font-family:monospace;margin-bottom:2rem}</style></head><body><a href="/" class="back">← Back</a><div class="meta"><span class="cat">${p.category||'General'}</span>${p.date||''}</div><h1>${p.title}</h1><div class="content">${body}</div></body></html>`;
+  const html=`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><title>${p.title} | Sanket Dhital</title><meta name="description" content="${p.excerpt||''}"/><link rel="canonical" href="https://sanketdhital.com.np/blog/${p.slug}"/><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"${p.title}","author":{"@type":"Person","name":"Sanket Dhital"},"datePublished":"${p.updated}"}<\/script><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet"/><style>body{font-family:'DM Sans',sans-serif;background:#faf8f4;color:#1a1a2e;max-width:720px;margin:0 auto;padding:3rem 1.5rem;line-height:1.8;font-weight:300}h1{font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:900;margin-bottom:.5rem;line-height:1.2}.meta{color:#999;font-size:.8rem;margin-bottom:2.5rem}.cat{background:rgba(201,168,76,.1);color:#c9a84c;padding:.2rem .6rem;border-radius:100px;font-size:.7rem;margin-right:.4rem}.content{font-size:1rem;color:#3a3a5e}.back{display:inline-flex;align-items:center;gap:.5rem;color:#c9a84c;text-decoration:none;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;font-family:monospace;margin-bottom:2rem}</style></head><body><a href="/" class="back">← Back</a><div class="meta"><span class="cat">${p.category||'General'}</span>${p.date||''}</div><h1>${p.title}</h1><div class="content">${body}</div>  <div class="pub-banner" id="pubBanner" onclick="document.getElementById('view-settings') && switchView('settings'); publishSite(this)">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    Publish Changes
+  </div>
+</body></html>`;
   dl(p.slug+'.html',html,'text/html');
   toast('📥 HTML exported!');
 }
@@ -964,7 +976,7 @@ function exportPost(){
 
 /* HERO */
 function loadHeroEd(){const h=SD.hero;document.getElementById('hEy').value=h.eyebrow||'';document.getElementById('hSub').value=h.subtitle||'';document.getElementById('h1n').value=h.stat1.num||'';document.getElementById('h1l').value=h.stat1.label||'';document.getElementById('h2n').value=h.stat2.num||'';document.getElementById('h2l').value=h.stat2.label||'';document.getElementById('h3n').value=h.stat3.num||'';document.getElementById('h3l').value=h.stat3.label||'';}
-function saveHero(){SD.hero={eyebrow:gv('hEy'),subtitle:gv('hSub'),stat1:{num:gv('h1n'),label:gv('h1l')},stat2:{num:gv('h2n'),label:gv('h2l')},stat3:{num:gv('h3n'),label:gv('h3l')}};saveSD();toast('✓ Hero saved');autoRefreshPreview();}
+function saveHero(){SD.hero={eyebrow:gv('hEy'),subtitle:gv('hSub'),stat1:{num:gv('h1n'),label:gv('h1l')},stat2:{num:gv('h2n'),label:gv('h2l')},stat3:{num:gv('h3n'),label:gv('h3l')}};saveSD();showPubBanner();showPubBanner();showPubBanner();showPubBanner();showPubBanner();showPubBanner();toast('✓ Hero saved');autoRefreshPreview();}
 
 /* ABOUT */
 function loadAboutEd(){const a=SD.about;document.getElementById('aTitle').value=a.title||'';document.getElementById('aBio1').value=a.bio1||'';document.getElementById('aBio2').value=a.bio2||'';aTags=[...(a.tags||[])];renderATags();renderCertsEd();}
@@ -1253,40 +1265,55 @@ const AVAIL_PRESETS=[
    devices see the latest content
 ════════════════════════════════ */
 function publishSite(){
-  // Fetch current index.html
-  fetch('index.html?nocache='+Date.now())
-    .then(r=>r.text())
+  const btn=event.currentTarget||document.querySelector('.btn-publish');
+  const orig=btn?btn.innerHTML:'';
+  if(btn){btn.innerHTML='⏳ Generating...';btn.disabled=true;}
+
+  function finish(ok,msg){
+    if(btn){btn.innerHTML=orig;btn.disabled=false;}
+    toast(msg);
+  }
+
+  // Try fetch approach first
+  fetch('index.html?v='+Date.now())
+    .then(r=>{if(!r.ok)throw new Error('fetch failed');return r.text();})
     .then(html=>{
-      // Build the updated DD object from current SD data
-      const newDD=JSON.stringify(SD,null,2);
-      // Replace the DD= block in index.html
-      // Find start of DD block
-      const ddStart=html.indexOf('const DD={');
-      if(ddStart<0){toast('⚠ Could not find DD block in index.html');return;}
-      // Find the matching closing }; by counting braces
+      // Inject current data into DD block using brace-counting
+      const newDD='const DD='+JSON.stringify(SD)+';';
+      const ddStart=html.indexOf('const DD=');
+      if(ddStart<0){finish(false,'⚠ DD block not found in index.html');return;}
+      // Count braces to find exact end
       let depth=0,ddEnd=-1;
-      for(let i=ddStart+9;i<html.length;i++){
+      for(let i=ddStart;i<html.length;i++){
         if(html[i]==='{')depth++;
         else if(html[i]==='}'){depth--;if(depth===0){ddEnd=i+1;break;}}
       }
-      // Skip optional semicolon
-      if(ddEnd>0&&html[ddEnd]===';')ddEnd++;
-      if(ddEnd<0){toast('⚠ Could not parse DD block end');return;}
-      const newHtml=html.slice(0,ddStart)+'const DD='+newDD+';'+html.slice(ddEnd);
-      // Also update posts
-      const postsStr=JSON.stringify(JSON.parse(localStorage.getItem('sd_posts')||'[]'));
-      // Download the updated index.html
-      const blob=new Blob([newHtml],{type:'text/html'});
+      if(html[ddEnd]===';')ddEnd++;
+      if(ddEnd<0){finish(false,'⚠ Could not parse DD end');return;}
+      const updated=html.slice(0,ddStart)+newDD+html.slice(ddEnd);
+      // Trigger download
+      const blob=new Blob([updated],{type:'text/html'});
       const url=URL.createObjectURL(blob);
       const a=document.createElement('a');
       a.href=url;a.download='index.html';
       document.body.appendChild(a);a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      toast('✓ index.html downloaded! Push it to GitHub to publish everywhere.');
+      finish(true,'✓ Downloaded! Replace your local index.html and push to GitHub.');
     })
-    .catch(()=>toast('⚠ Make sure admin.html and index.html are in the same folder.'));
+    .catch(()=>{
+      // Fallback: show manual instructions
+      finish(false,'⚠ Auto-download failed. See instructions below.');
+      document.getElementById('pubManual').style.display='block';
+    });
 }
+function copyDD(){
+  const txt='const DD='+JSON.stringify(SD,null,2)+';';
+  navigator.clipboard.writeText(txt).then(()=>toast('✓ Copied! Paste into index.html replacing const DD={...};')).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('✓ Copied!');
+  });
+}
+
 
 function exportAll(){dl('sanket-backup.json',JSON.stringify({siteContent:SD,posts},null,2),'application/json');toast('📥 Full backup exported!');}
 function handleImport(e){
@@ -1306,5 +1333,9 @@ function toast(msg){const el=document.getElementById('toastEl');document.getElem
 
 refreshAll();
 </script>
+  <div class="pub-banner" id="pubBanner" onclick="document.getElementById('view-settings') && switchView('settings'); publishSite(this)">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    Publish Changes
+  </div>
 </body>
 </html>
