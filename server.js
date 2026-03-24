@@ -45,7 +45,7 @@ app.post('/api/auth/login', (req, res) => {
 const verifyToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     if (!authHeader) return res.status(403).json({ error: 'No token provided' });
-    
+
     const token = authHeader.split(' ')[1];
     jwt.verify(token, JWT_SECRET, (err, decoded) => {
         if (err) return res.status(401).json({ error: 'Unauthorized' });
@@ -70,13 +70,15 @@ app.get('/', (req, res) => {
             description: "Sanket Dhital — Administrative & Operations Professional based in Kathmandu, Nepal.",
             image: "https://sanketdhital.com.np/og-image.png"
         };
-        
+
         if (!err && row && row.content) {
             try {
                 const data = JSON.parse(row.content);
                 if (data.hero && data.hero.eyebrow) seo.title = `Sanket Dhital | ${data.hero.eyebrow}`;
                 if (data.hero && data.hero.subtitle) seo.description = data.hero.subtitle;
-            } catch (e) { console.error('Error parsing SEO content', e); }
+            } catch (e) {
+                console.error('Error parsing SEO content', e);
+            }
         }
 
         res.render('index', { seo });
@@ -90,6 +92,10 @@ app.get('/admin', (req, res) => {
 app.get('/index.html', (req, res) => res.redirect('/'));
 app.get('/admin.html', (req, res) => res.redirect('/admin'));
 
-app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
-});
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Server listening on port ${PORT}`);
+    });
+}
+
+module.exports = app;
