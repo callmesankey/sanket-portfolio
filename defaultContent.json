@@ -1,0 +1,62 @@
+{
+  "hero": {
+    "eyebrow": "Administrative & Operations Professional",
+    "subtitle": "Streamlining operations and driving organisational efficiency through data-driven administration, CRM systems, and strategic coordination — based in Kathmandu, Nepal.",
+    "stat1": { "num": "5+", "label": "Years of Professional Experience" },
+    "stat2": { "num": "4", "label": "Organisations Served" },
+    "stat3": { "num": "CAO", "label": "Current Role · Lapmis Trade Pvt. Ltd." }
+  },
+  "about": {
+    "title": "Operations at the intersection of people & systems",
+    "bio1": "I'm an administrative professional with over five years of experience streamlining operations across diverse industries in Nepal. My strength lies in bridging the gap between technical systems and human workflows — whether that's managing CRM platforms, overseeing LIS integrations, or coordinating cross-departmental teams.",
+    "bio2": "From serving as Chief Administrative Officer at Lapmis Trade to editing publications for the Rotary Club of Rudramati, I bring structure, accuracy, and a collaborative spirit to everything I do.",
+    "tags": ["Data Management", "CRM Systems", "Digital Strategy", "Business Development", "Office Coordination", "HR Operations", "Documentation", "Email Outreach"]
+  },
+  "certifications": [
+    { "icon": "rotary", "name": "International Rotary Youth Leadership Award (RYLA) 2019", "org": "Rotary International" },
+    { "icon": "excel", "name": "Technical Tutorial — Excel Power Query", "org": "Microsoft" },
+    { "icon": "computing", "name": "Introducing Computing and IT", "org": "Open University" },
+    { "icon": "marketing", "name": "The Fundamentals of Digital Marketing", "org": "Google Digital Garage" },
+    { "icon": "canva", "name": "Canva Essentials", "org": "Canva" }
+  ],
+  "experience": [
+    { "id": "e1", "period": "Oct 2021 – Present · 4+ yrs", "role": "Chief Administrative Officer", "company": "Lapmis Trade Pvt. Ltd.", "location": "Bhaktapur, Nepal", "desc": ["Collaborated with the developer of epgnepal.com, providing UX insights and functional feedback", "Managed and maintained data within IT systems, ensuring accuracy, integrity, and accessibility", "Resolved IT system complaints, administered payroll, and maintained HRIS employee records"], "extra": ["Facilitated effective communication across technical, operational, and business development teams", "Conducted research on consumer-friendly software development and industry trends"] },
+    { "id": "e2", "period": "Feb 2024 – Dec 2025 · 1 yr 11 mos", "role": "Administrative Manager", "company": "Omega International Pvt. Ltd.", "location": "Kathmandu, Nepal", "desc": ["Proactively identified and prospected new business via market research and networking", "Executed targeted email outreach using Instantly.ai — A/B testing and performance tracking", "Contributed to a custom in-house CRM system for candidate management"], "extra": ["Prepared MOUs, agreements, and partnership documentation", "Managed the CEO's calendar and scheduled strategic meetings"] },
+    { "id": "e3", "period": "Jul 2022 – Jul 2025 · 3 yrs", "role": "Editor", "company": "Rotary Club of Rudramati", "location": "Kathmandu, Nepal", "desc": ["Designed the monthly bulletin and coordinated content collection", "Produced the annual Rotary Club souvenir showcasing achievements", "Ensured consistency with Rotary branding standards"], "extra": [] },
+    { "id": "e4", "period": "Sep 2020 – Oct 2021 · 1 yr 2 mos", "role": "Administrative Manager", "company": "BIDH Lab", "location": "Lalitpur, Nepal", "desc": ["Oversaw LIS integration and performance in coordination with technical teams", "Resolved LIS-related technical issues ensuring system reliability", "Supervised field operations for LIS implementation"], "extra": [] },
+    { "id": "e5", "period": "Jan 2020 – Aug 2020 · 8 mos", "role": "Junior Administrator", "company": "IDEA HUB Research & Development Pvt. Ltd.", "location": "Kathmandu", "desc": ["Supported project planning and documentation for senior executives", "Managed the company's social media presence"], "extra": [] },
+    { "id": "e6", "period": "Jun 2019 – Jun 2020 · 1 yr", "role": "Office Secretary", "company": "Rotary Club of Dillibazar-Kathmandu", "location": "Kathmandu", "desc": ["Assisted with weekly meetings and financial record-keeping", "Maintained accurate member records and supported event planning"], "extra": [] }
+  ],
+  "skills": [
+    { "id": "s1", "icon": "ops", "name": "Administrative Operations", "items": ["Office Management & Coordination", "Documentation & Record Keeping", "HR Administration & Payroll", "Calendar & Schedule Management", "Cross-departmental Communication"] },
+    { "id": "s2", "icon": "tech", "name": "Technology & Systems", "items": ["CRM Software & Implementation", "HRIS Systems", "LIS Integration Oversight", "Excel & Power Query", "IT Systems Management"] },
+    { "id": "s3", "icon": "digital", "name": "Digital & Marketing", "items": ["Digital Strategy & Planning", "Email Campaign Management", "Social Media Management", "Instantly.ai & Automation", "Canva Design & Branding"] },
+    { "id": "s4", "icon": "biz", "name": "Business Development", "items": ["Lead Prospecting & Research", "MOU & Agreement Drafting", "Stakeholder Relationship Management", "B2B Outreach Strategies"] },
+    { "id": "s5", "icon": "edit", "name": "Editorial & Communication", "items": ["Publication & Bulletin Design", "Content Editing & Proofreading", "Brand Consistency Management", "Event Documentation"] },
+    { "id": "s6", "icon": "lang", "name": "Languages", "items": ["Nepali — Native", "English — Professional", "Hindi — Conversational"] }
+  ],
+  "contact": {
+    "tagline": "Whether you're looking for a dependable administrative professional, a strategic operations partner, or want to discuss a collaboration — I'd love to hear from you.",
+    "email": "sankeydhital@gmail.com",
+    "whatsapp": "977",
+    "linkedin": "https://www.linkedin.com/in/sanketdhital",
+    "website": "https://sanketdhital.com.np",
+    "location": "Kathmandu, Nepal",
+    "role": "Chief Administrative Officer",
+    "company": "Lapmis Trade Pvt. Ltd.",
+    "twitter": "",
+    "instagram": "",
+    "facebook": "",
+    "phone": "",
+    "btnMode": "contact",
+    "cvData": {
+      "name": "Sanket Dhital",
+      "tagline": "Administrative & Operations Professional",
+      "phone": "",
+      "email": "sankeydhital@gmail.com",
+      "website": "sanketdhital.com.np",
+      "location": "Kathmandu, Nepal",
+      "summary": "Results-driven Administrative & Operations Professional with 5+ years of experience across CRM systems, digital strategy, and organizational coordination."
+    }
+  }
+}
