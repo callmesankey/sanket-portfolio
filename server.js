@@ -4,8 +4,14 @@ const cors = require('cors');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const db = require('./db');
 const fs = require('fs');
+
+let db = null;
+try {
+    db = require('./db');
+} catch (e) {
+    console.error('DB disabled on this environment:', e.message);
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,6 +26,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // API ROUTES
 app.get('/api/content', (req, res) => {
+    if (!db) return res.status(503).json({ error: 'Database unavailable on this deployment' });
+
     db.get('SELECT content FROM portfolio_content WHERE id = 1', (err, row) => {
         if (err) return res.status(500).json({ error: 'Database error' });
         res.json(JSON.parse(row.content));
@@ -27,6 +35,8 @@ app.get('/api/content', (req, res) => {
 });
 
 app.post('/api/auth/login', (req, res) => {
+    if (!db) return res.status(503).json({ error: 'Login unavailable on this deployment' });
+
     const { username, password } = req.body;
     db.get('SELECT * FROM users WHERE username = ?', [username], (err, user) => {
         if (err) return res.status(500).json({ error: 'Database error' });
@@ -55,6 +65,8 @@ const verifyToken = (req, res, next) => {
 };
 
 app.put('/api/content', verifyToken, (req, res) => {
+    if (!db) return res.status(503).json({ error: 'Content update unavailable on this deployment' });
+
     const newContent = req.body;
     db.run('UPDATE portfolio_content SET content = ? WHERE id = 1', [JSON.stringify(newContent)], function(err) {
         if (err) return res.status(500).json({ error: 'Database error' });
@@ -64,13 +76,17 @@ app.put('/api/content', verifyToken, (req, res) => {
 
 // FRONTEND SSR ROUTES
 app.get('/', (req, res) => {
-    db.get('SELECT content FROM portfolio_content WHERE id = 1', (err, row) => {
-        let seo = {
-            title: "Sanket Dhital | Administrative & Operations Professional",
-            description: "Sanket Dhital — Administrative & Operations Professional based in Kathmandu, Nepal.",
-            image: "https://sanketdhital.com.np/og-image.png"
-        };
+    const seo = {
+        title: "Sanket Dhital | Administrative & Operations Professional",
+        description: "Sanket Dhital — Administrative & Operations Professional based in Kathmandu, Nepal.",
+        image: "https://sanketdhital.com.np/og-image.png"
+    };
 
+    if (!db) {
+        return res.render('index', { seo });
+    }
+
+    db.get('SELECT content FROM portfolio_content WHERE id = 1', (err, row) => {
         if (!err && row && row.content) {
             try {
                 const data = JSON.parse(row.content);
